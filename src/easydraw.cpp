@@ -225,7 +225,7 @@ void Easydraw::Test()
 
 	Text("Bigfazssbatt", 560, 15, DT_NOCLIP);
 
-	Circle(600, 30, 50, 30, 1);
+	Circle(700, 73, 30, 15, 1);
 
 
 }
@@ -344,25 +344,21 @@ void Easydraw::Circle(int32_t x, int32_t y, int32_t radius, int32_t edgecount, i
 	LPDIRECT3DDEVICE9 device = (LPDIRECT3DDEVICE9)d3ddevice;
 	D3DCOLOR d3dcol = (D3DCOLOR)curcol.GetUint32ARGB();
 
-	int32_t VertexCount = edgecount + 2;
-	int32_t PrimCount = edgecount;
+	VertexList *verts = new VertexList[edgecount + 1];
 
-	VertexList * pV = new VertexList[VertexCount];
-
-	pV[0] = { (float)x, (float)y, 0.0f, 1.0f, d3dcol };
-
-	float dAngle = (float)3.141592654 * 2 / (float)edgecount;
-	float cAngle = (float)rotation;
-
-	for (int32_t i = 0; i != edgecount; ++i, cAngle += dAngle)
+	for (int i = 0; i < edgecount + 1; i++)
 	{
-		pV[i + 1] = { x + (float)sin(cAngle) * (float)radius, y + (float)cos(cAngle) * (float)radius, 0.0f, 1.0f, d3dcol };
+		verts[i].x = x + radius*cos(D3DX_PI*(i / (edgecount / 2.0f)));
+		verts[i].y = y + radius*sin(D3DX_PI*(i / (edgecount / 2.0f)));
+		verts[i].z = 0;
+		verts[i].rhw = 1;
+		verts[i].color = d3dcol;
 	}
-	pV[VertexCount - 1] = { x + (float)sin((float)rotation) * (float)radius, y + (float)cos((float)rotation) * (float)radius, 0.0f, 1.0f, d3dcol };
 
-	device->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, PrimCount, pV, sizeof(VertexList));
+	device->SetTexture(0, 0);
+	device->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, edgecount-1, verts, sizeof(VertexList));
 
-	delete[] pV;
+	delete[] verts;
 }
 
 void Easydraw::Text(const char *text,  int32_t x, int32_t y, int32_t format, easydraw_fontrect* rect)
