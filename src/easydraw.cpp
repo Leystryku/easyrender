@@ -11,7 +11,7 @@ Easymaterial::Easymaterial()
 {
 	d3dtexture = 0;
 	drawinst = 0;
-	memset(file, 0, 256);
+	memset(file, 0, sizeof(file));
 
 }
 
@@ -23,7 +23,7 @@ Easymaterial::Easymaterial(Easydraw* draw, const char* filename)
 	height = 0;
 	d3dtexture = 0;
 	drawinst = 0;
-	memset(file, 0, 256);
+	memset(file, 0, sizeof(file));
 
 	if (!draw || !filename)
 		return;
@@ -64,7 +64,7 @@ Easymaterial::Easymaterial(Easydraw* draw, const char* filename)
 void Easymaterial::operator = (Easymaterial* mat)
 {
 	d3dtexture = 0;
-	memset(file, 0, 256);
+	memset(file, 0, sizeof(file));
 	drawinst = 0;
 
 	if (!mat)
@@ -90,8 +90,8 @@ Easyfont::Easyfont()
 	width = 0;
 	height = 0;
 	weight = 0;
-	memset(name, 0, 256);
-	memset(ourname, 0, 256);
+	memset(name, 0, sizeof(name));
+	memset(ourname, 0, sizeof(ourname));
 }
 
 Easyfont::Easyfont(Easydraw *draw, const char*newfontname, const char *fontname, int32_t fontwidth, int32_t fontheight, int32_t fontweight)
@@ -101,8 +101,8 @@ Easyfont::Easyfont(Easydraw *draw, const char*newfontname, const char *fontname,
 	width = 0;
 	height = 0;
 	weight = 0;
-	memset(name, 0, 256);
-	memset(ourname, 0, 256);
+	memset(name, 0, sizeof(name));
+	memset(ourname, 0, sizeof(ourname));
 
 	LPDIRECT3DDEVICE9 device = (LPDIRECT3DDEVICE9)draw->GetDevice();
 
@@ -137,8 +137,8 @@ void Easyfont::operator = (Easyfont* font)
 	width = 0;
 	height = 0;
 	weight = 0;
-	memset(name, 0, 256);
-	memset(ourname, 0, 256);
+	memset(name, 0, sizeof(name));
+	memset(ourname, 0, sizeof(ourname));
 
 	if (!font)
 	{
@@ -177,8 +177,8 @@ Easydraw::Easydraw(void* device)
 	matbuffer_loaded = 0;
 	fontbuffer_loaded = 0;
 	
-	memset(matbuffer, 0, 0xFFFF);
-	memset(fontbuffer, 0, 0xFFFF);
+	memset(&matbuffer, 0, sizeof(matbuffer));
+	memset(&fontbuffer, 0, sizeof(fontbuffer));
 
 	d3ddevice = device;
 	curcol.SetFullWhite();
@@ -209,7 +209,7 @@ void Easydraw::Test()
 
 	OutlinedRectangle(400, 30, 100, 100, 10);
 
-	Easymaterial *mat = GetMaterial("C:/animegirl.png");
+	Easymaterial *mat = GetMaterial("C:/anime.png");
 		
 	SetMaterial(mat);
 
@@ -337,7 +337,8 @@ void Easydraw::TexturedRectangle(int32_t x, int32_t y, int32_t width, int32_t he
 	device->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertexes, sizeof(VertexList));
 }
 
-void Easydraw::Circle(int32_t x, int32_t y, int32_t radius, int32_t edgecount, int32_t rotation) // this is the only func I didn't make myself because: Fuck drawing circles.
+// this is the only func I didn't make myself because: Fuck drawing circles.
+void Easydraw::Circle(int32_t x, int32_t y, int32_t radius, int32_t edgecount, int32_t rotation)
 {
 
 	LPDIRECT3DDEVICE9 device = (LPDIRECT3DDEVICE9)d3ddevice;
