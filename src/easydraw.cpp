@@ -56,7 +56,7 @@ Easymaterial::Easymaterial(Easydraw* draw, const char* filename)
 	width = imginfo.Width;
 
 	drawinst = draw;
-	strncpy(file, filename, 256);
+	strncpy(file, filename, sizeof(file));
 	d3dtexture = loadedtex;
 
 }
@@ -78,7 +78,7 @@ void Easymaterial::operator = (Easymaterial* mat)
 	}
 
 
-	strncpy(file, mat->file, 256);
+	strncpy(file, mat->file, sizeof(file));
 	drawinst = mat->drawinst;
 	d3dtexture = mat->d3dtexture;
 
@@ -124,8 +124,8 @@ Easyfont::Easyfont(Easydraw *draw, const char*newfontname, const char *fontname,
 	width = fontwidth;
 	height = fontheight;
 	drawinst = draw;
-	strncpy(name, fontname, 256);
-	strncpy(ourname, newfontname, 256);
+	strncpy(name, fontname, sizeof(name));
+	strncpy(ourname, newfontname, sizeof(ourname));
 
 	d3dfont = loadfont;
 }
@@ -155,8 +155,8 @@ void Easyfont::operator = (Easyfont* font)
 	height = font->height;
 	weight = font->weight;
 
-	strncpy(name, font->name, 256);
-	strncpy(ourname, font->ourname, 256);
+	strncpy(name, font->name, sizeof(name));
+	strncpy(ourname, font->ourname, sizeof(ourname));
 
 	d3dfont = font->d3dfont;
 
@@ -209,13 +209,13 @@ void Easydraw::Test()
 
 	OutlinedRectangle(400, 30, 100, 100, 10);
 
-	Easymaterial *mat = GetMaterial("C:/anime.png");
+	Easymaterial *mat = GetMaterial("C:/test.png");
 		
 	SetMaterial(mat);
 
 	TexturedRectangle(550, 30, mat->GetMemWidth()/4, mat->GetMemHeight()/4);
 
-	Easyfont *font = GetFont("kkkfont", "tahoma", 12, 0, FONTWEIGHT_NORMAL);
+	Easyfont *font = GetFont("nicefontnig", "arial", 12, 0, FONTWEIGHT_NORMAL);
 	SetFont(font);
 
 	curcol.r = 128;
@@ -223,7 +223,7 @@ void Easydraw::Test()
 	curcol.b = 0;
 	curcol.a = 255;
 
-	Text("Monkeyaidsking", 560, 15, DT_NOCLIP);
+	Text("Bigfazssbatt", 560, 15, DT_NOCLIP);
 
 	Circle(600, 30, 50, 30, 1);
 
