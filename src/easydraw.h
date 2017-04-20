@@ -164,6 +164,22 @@ public:
 
 };
 
+#define DRAWTEXT_TOP                      0x00000000
+#define DRAWTEXT_LEFT                     0x00000000
+#define DRAWTEXT_CENTER                   0x00000001
+#define DRAWTEXT_RIGHT                    0x00000002
+#define DRAWTEXT_VCENTER                  0x00000004
+#define DRAWTEXT_BOTTOM                   0x00000008
+#define DRAWTEXT_WORDBREAK                0x00000010
+#define DRAWTEXT_SINGLELINE               0x00000020
+#define DRAWTEXT_EXPANDTABS               0x00000040
+#define DRAWTEXT_TABSTOP                  0x00000080
+#define DRAWTEXT_NOCLIP                   0x00000100
+#define DRAWTEXT_EXTERNALLEADING          0x00000200
+#define DRAWTEXT_CALCRECT                 0x00000400
+#define DRAWTEXT_NOPREFIX                 0x00000800
+#define DRAWTEXT_INTERNAL                 0x00001000
+
 #define FONTWEIGHT_DONTCARE         0
 #define FONTWEIGHT_THIN             100
 #define FONTWEIGHT_EXTRALIGHT       200
@@ -179,8 +195,7 @@ class Easyfont
 {
 	void* d3dfont;
 
-	int32_t width;
-	int32_t height;
+	int32_t fontsize;
 	int32_t weight;
 
 	char name[256];
@@ -190,7 +205,7 @@ class Easyfont
 
 public:
 	Easyfont();
-	Easyfont(Easydraw *draw, const char*ourname, const char *fontname, int32_t fontwidth, int32_t fontheight, int32_t fontweight);
+	Easyfont(Easydraw *draw, const char*ourname, const char *fontname, int32_t fontsize, int32_t fontweight);
 
 	void Easyfont::operator = (Easyfont* font);
 
@@ -218,23 +233,17 @@ public:
 		return name;
 	}
 
-	int32_t GetWidth()
+	int32_t GetSize()
 	{
-		return width;
+		return fontsize;
 	}
-
-	int32_t GetHeight()
-	{
-		return height;
-	}
-
 	int32_t GetWeight()
 	{
 		return weight;
 	}
 };
 
-typedef struct easydraw_fontrect
+struct easydraw_fontrect
 {
 	int32_t    left;
 	int32_t    top;
@@ -288,7 +297,7 @@ public:
 	int32_t GetTextSize(const char*text, int32_t&w, int32_t& h);
 
 	Easymaterial* GetMaterial(const char *file);
-	Easyfont* GetFont(const char*ourname, const char *fontname, int32_t fontwidth, int32_t fontheight, int32_t fontweight);
+	Easyfont* GetFont(const char*ourname, const char *fontname, int32_t fontsize, int32_t fontweight);
 };
 
 extern Easydraw *easydraw;
