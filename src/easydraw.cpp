@@ -93,7 +93,7 @@ Easyfont::Easyfont()
 	memset(ourname, 0, sizeof(ourname));
 }
 
-Easyfont::Easyfont(Easydraw *draw, const char*newfontname, const char *fontname, int32_t tofontsize, int32_t fontweight)
+Easyfont::Easyfont(Easydraw *draw, int32_t fontnumerator, const char*newfontname, const char *fontname, int32_t tofontsize, int32_t fontweight)
 {
 	drawinst = 0;
 	d3dfont = 0;
@@ -108,7 +108,7 @@ Easyfont::Easyfont(Easydraw *draw, const char*newfontname, const char *fontname,
 
 	ID3DXFont* loadfont;
 
-	if (FAILED(hr = D3DXCreateFont(device, MulDiv(14, GetDeviceCaps(GetDC(GetDesktopWindow()), LOGPIXELSY), 72), 0, fontweight, 1, false, DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS, ANTIALIASED_QUALITY, FF_DONTCARE | DEFAULT_PITCH , fontname, &loadfont)) || !loadfont)
+	if (FAILED(hr = D3DXCreateFont(device, MulDiv(tofontsize, fontnumerator, 72), 0, fontweight, 1, false, DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS, ANTIALIASED_QUALITY, FF_DONTCARE | DEFAULT_PITCH , fontname, &loadfont)) || !loadfont)
 	{
 		const char *errorString = DXGetErrorString(hr); // Here you get error string
 		const char *errorDesc = DXGetErrorDescription(hr); // Here you get error description
@@ -177,6 +177,8 @@ Easydraw::Easydraw(void* device)
 
 	d3ddevice = device;
 	curcol.SetFullWhite();
+	logpixelsx = GetDeviceCaps(GetDC(GetDesktopWindow()), LOGPIXELSY);
+	logpixelsy = GetDeviceCaps(GetDC(GetDesktopWindow()), LOGPIXELSY);
 }
 
 void Easydraw::Test()
@@ -403,7 +405,7 @@ void Easydraw::SetFont(Easyfont *font)
 	curfont = font;
 }
 
-int32_t Easydraw::GetTextSize(const char*txt, int32_t&w, int32_t& h)
+int32_t Easydraw::GetRawTextSize(const char*txt, int32_t&w, int32_t& h)
 {
 	if (!curfont.IsValid())
 	{
@@ -412,6 +414,8 @@ int32_t Easydraw::GetTextSize(const char*txt, int32_t&w, int32_t& h)
 		return 0;
 	}
 
+
+
 	ID3DXFont *font = (ID3DXFont*)curfont.GetFont();
 	RECT rec = { 0,0,0,0 };
 
@@ -419,6 +423,23 @@ int32_t Easydraw::GetTextSize(const char*txt, int32_t&w, int32_t& h)
 
 	w = rec.right - rec.left;
 	h = rec.bottom - rec.top;
+
+	return 1;
+}
+
+int32_t Easydraw::GetTextSize(const char*txt, int32_t&w, int32_t& h)
+{
+	GetRawTextSize(txt, w, h);
+
+	//w * logpixelsx / 72 = ms size
+	//ms size * 72 / logpixelsx = w
+
+	w = MulDiv(w, 72, logpixelsx);
+
+	//h * logpixelsy / 72 = ms size
+	//ms size * 72 / logpixelsy = h
+
+	h  = MulDiv(h, 72, logpixelsy);
 
 	return 1;
 }
@@ -473,7 +494,7 @@ Easyfont* Easydraw::GetFont(const char* ourname, const char *fontname, int32_t f
 
 	}
 
-	Easyfont *font = new Easyfont(this, ourname, fontname, fontsize, fontweight);
+	Easyfont *font = new Easyfont(this, logpixelsx, ourname, fontname, fontsize, fontweight);
 
 	if (!font)
 	{
