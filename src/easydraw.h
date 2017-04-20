@@ -205,7 +205,7 @@ class Easyfont
 
 public:
 	Easyfont();
-	Easyfont(Easydraw *draw, const char*ourname, const char *fontname, int32_t fontsize, int32_t fontweight);
+	Easyfont(Easydraw *draw, int32_t logpixelsx, const char*ourname, const char *fontname, int32_t fontsize, int32_t fontweight);
 
 	void Easyfont::operator = (Easyfont* font);
 
@@ -266,6 +266,8 @@ private:
 	uint16_t matbuffer_loaded;
 	uint16_t fontbuffer_loaded;
 
+	int32_t logpixelsx;
+	int32_t logpixelsy;
 public:
 	Easydraw(void *device);
 
@@ -294,6 +296,7 @@ public:
 	void SetFont(Easyfont* font);
 	void SetMaterial(Easymaterial* mat);
 	
+	int32_t GetRawTextSize(const char*text, int32_t&w, int32_t& h);
 	int32_t GetTextSize(const char*text, int32_t&w, int32_t& h);
 
 	Easymaterial* GetMaterial(const char *file);
