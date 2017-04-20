@@ -87,20 +87,18 @@ void Easymaterial::operator = (Easymaterial* mat)
 Easyfont::Easyfont()
 {
 	drawinst = 0;
-	width = 0;
-	height = 0;
+	fontsize = 0;
 	weight = 0;
 	memset(name, 0, sizeof(name));
 	memset(ourname, 0, sizeof(ourname));
 }
 
-Easyfont::Easyfont(Easydraw *draw, const char*newfontname, const char *fontname, int32_t fontwidth, int32_t fontheight, int32_t fontweight)
+Easyfont::Easyfont(Easydraw *draw, const char*newfontname, const char *fontname, int32_t tofontsize, int32_t fontweight)
 {
 	drawinst = 0;
 	d3dfont = 0;
-	width = 0;
-	height = 0;
 	weight = 0;
+	fontsize = 0;
 	memset(name, 0, sizeof(name));
 	memset(ourname, 0, sizeof(ourname));
 
@@ -110,7 +108,7 @@ Easyfont::Easyfont(Easydraw *draw, const char*newfontname, const char *fontname,
 
 	ID3DXFont* loadfont;
 
-	if (FAILED(hr = D3DXCreateFont(device, fontheight, fontwidth, fontweight, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE, fontname, &loadfont)) || !loadfont)
+	if (FAILED(hr = D3DXCreateFont(device, MulDiv(14, GetDeviceCaps(GetDC(GetDesktopWindow()), LOGPIXELSY), 72), 0, fontweight, 1, false, DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS, ANTIALIASED_QUALITY, FF_DONTCARE | DEFAULT_PITCH , fontname, &loadfont)) || !loadfont)
 	{
 		const char *errorString = DXGetErrorString(hr); // Here you get error string
 		const char *errorDesc = DXGetErrorDescription(hr); // Here you get error description
@@ -121,8 +119,7 @@ Easyfont::Easyfont(Easydraw *draw, const char*newfontname, const char *fontname,
 	}
 
 	weight = fontweight;
-	width = fontwidth;
-	height = fontheight;
+	fontsize = tofontsize;
 	drawinst = draw;
 	strncpy(name, fontname, sizeof(name));
 	strncpy(ourname, newfontname, sizeof(ourname));
@@ -134,8 +131,7 @@ void Easyfont::operator = (Easyfont* font)
 {
 	drawinst = 0;
 	d3dfont = 0;
-	width = 0;
-	height = 0;
+	fontsize = 0;
 	weight = 0;
 	memset(name, 0, sizeof(name));
 	memset(ourname, 0, sizeof(ourname));
@@ -151,8 +147,7 @@ void Easyfont::operator = (Easyfont* font)
 	}
 
 	drawinst = font->drawinst;
-	width = font->width;
-	height = font->height;
+	fontsize = font->fontsize;
 	weight = font->weight;
 
 	strncpy(name, font->name, sizeof(name));
@@ -198,7 +193,7 @@ void Easydraw::Test()
 
 	curcol.SetFullRed();
 
-	Line(150+20, 30, 250, 30);
+	Line(150 + 20, 30, 250, 30);
 
 	curcol.SetFullGreen();
 
@@ -210,12 +205,12 @@ void Easydraw::Test()
 	OutlinedRectangle(400, 30, 100, 100, 10);
 
 	Easymaterial *mat = GetMaterial("C:/test.png");
-		
+
 	SetMaterial(mat);
 
-	TexturedRectangle(550, 30, mat->GetMemWidth()/4, mat->GetMemHeight()/4);
+	TexturedRectangle(550, 30, mat->GetMemWidth() / 4, mat->GetMemHeight() / 4);
 
-	Easyfont *font = GetFont("nicefontnig", "arial", 12, 0, FONTWEIGHT_NORMAL);
+	Easyfont *font = GetFont("nicefontnig", "arial", 12, FONTWEIGHT_NORMAL);
 	SetFont(font);
 
 	curcol.r = 128;
@@ -348,8 +343,8 @@ void Easydraw::Circle(int32_t x, int32_t y, int32_t radius, int32_t edgecount, i
 
 	for (int i = 0; i < edgecount + 1; i++)
 	{
-		verts[i].x = x + radius*cos(D3DX_PI*(i / (edgecount / 2.0f)));
-		verts[i].y = y + radius*sin(D3DX_PI*(i / (edgecount / 2.0f)));
+		verts[i].x = (float)(x + radius*cos(D3DX_PI*(i / (edgecount / 2.0f))));
+		verts[i].y = (float)(y + radius*sin(D3DX_PI*(i / (edgecount / 2.0f))));
 		verts[i].z = 0;
 		verts[i].rhw = 1;
 		verts[i].color = d3dcol;
@@ -363,8 +358,6 @@ void Easydraw::Circle(int32_t x, int32_t y, int32_t radius, int32_t edgecount, i
 
 void Easydraw::Text(const char *text,  int32_t x, int32_t y, int32_t format, easydraw_fontrect* rect)
 {
-	LPDIRECT3DDEVICE9 device = (LPDIRECT3DDEVICE9)d3ddevice;
-
 	if (!curfont.IsValid())
 	{
 		return;
@@ -464,7 +457,7 @@ Easymaterial* Easydraw::GetMaterial(const char *filename)
 	return mat;
 }
 
-Easyfont* Easydraw::GetFont(const char* ourname, const char *fontname, int32_t fontwidth, int32_t fontheight, int32_t fontweight)
+Easyfont* Easydraw::GetFont(const char* ourname, const char *fontname, int32_t fontsize, int32_t fontweight)
 {
 	for (uint16_t i = 0; i < fontbuffer_loaded; i++) // caching TM
 	{
@@ -480,7 +473,7 @@ Easyfont* Easydraw::GetFont(const char* ourname, const char *fontname, int32_t f
 
 	}
 
-	Easyfont *font = new Easyfont(this, ourname, fontname, fontwidth, fontheight, fontweight);
+	Easyfont *font = new Easyfont(this, ourname, fontname, fontsize, fontweight);
 
 	if (!font)
 	{
