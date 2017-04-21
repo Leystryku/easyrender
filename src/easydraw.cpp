@@ -222,7 +222,7 @@ void Easydraw::Test()
 
 	Text("Bigfazssbatt", 560, 15, DT_NOCLIP);
 
-	Circle(700, 73, 30, 15, 1);
+	Circle(700, 73, 30, 15);
 
 
 }
@@ -334,26 +334,96 @@ void Easydraw::TexturedRectangle(int32_t x, int32_t y, int32_t width, int32_t he
 	device->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertexes, sizeof(VertexList));
 }
 
-// this is the only func I didn't make myself because: Fuck drawing circles.
 void Easydraw::Circle(int32_t x, int32_t y, int32_t radius, int32_t edgecount, int32_t rotation)
 {
 
 	LPDIRECT3DDEVICE9 device = (LPDIRECT3DDEVICE9)d3ddevice;
 	D3DCOLOR d3dcol = (D3DCOLOR)curcol.GetUint32ARGB();
 
-	VertexList *verts = new VertexList[edgecount + 1];
+	int32_t vertexnum = edgecount;
 
-	for (int i = 0; i < edgecount + 1; i++)
+
+	if (!vertexnum)
 	{
-		verts[i].x = (float)(x + radius*cos(D3DX_PI*(i / (edgecount / 2.0f))));
-		verts[i].y = (float)(y + radius*sin(D3DX_PI*(i / (edgecount / 2.0f))));
-		verts[i].z = 0;
-		verts[i].rhw = 1;
-		verts[i].color = d3dcol;
+		vertexnum = 30;
 	}
 
+
+	VertexList *verts = new VertexList[vertexnum+3]; // don't ask me why +3, +3 fixes some weird bug
+	memset(verts, 0, vertexnum+3);
+
+	for (int32_t i = 0; i < vertexnum+3; i++)
+	{
+		//x,y, z, rhw, col, textureshita, textureshitb
+
+		float coefficient = i / (vertexnum / 2.0f);
+
+		coefficient *= D3DX_PI;
+
+		float vertx = (float)((float)x + (float)radius*cos(rotation+coefficient));
+		float verty = (float)((float)y + (float)radius*sin(rotation+coefficient));
+
+		verts[i] = { vertx, verty, 0.0f, 1.0f, d3dcol, 0.0f, 0.0f };
+	}
+
+
+	DWORD oldaaenabled = 0;
+
+	device->GetRenderState(D3DRS_MULTISAMPLEANTIALIAS, &oldaaenabled);
+
+	device->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
+
 	device->SetTexture(0, 0);
-	device->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, edgecount-1, verts, sizeof(VertexList));
+	device->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, vertexnum, verts, sizeof(VertexList));
+
+	device->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, oldaaenabled);
+
+	delete[] verts;
+}
+
+void Easydraw::OutlinedCircle(int32_t x, int32_t y, int32_t radius, int32_t edgecount, int32_t rotation)
+{
+
+	LPDIRECT3DDEVICE9 device = (LPDIRECT3DDEVICE9)d3ddevice;
+	D3DCOLOR d3dcol = (D3DCOLOR)curcol.GetUint32ARGB();
+
+	int32_t vertexnum = edgecount;
+
+
+	if (!vertexnum)
+	{
+		vertexnum = 30;
+	}
+
+
+	VertexList *verts = new VertexList[vertexnum + 3]; // don't ask me why +3, +3 fixes some weird bug
+	memset(verts, 0, vertexnum + 3);
+
+	for (int32_t i = 0; i < vertexnum + 3; i++)
+	{
+		//x,y, z, rhw, col, textureshita, textureshitb
+
+		float coefficient = i / (vertexnum / 2.0f);
+
+		coefficient *= D3DX_PI;
+
+		float vertx = (float)((float)x + (float)radius*cos(rotation + coefficient));
+		float verty = (float)((float)y + (float)radius*sin(rotation + coefficient));
+
+		verts[i] = { vertx, verty, 0.0f, 1.0f, d3dcol, 0.0f, 0.0f };
+	}
+
+
+	DWORD oldaaenabled = 0;
+
+	device->GetRenderState(D3DRS_MULTISAMPLEANTIALIAS, &oldaaenabled);
+
+	device->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
+
+	device->SetTexture(0, 0);
+	device->DrawPrimitiveUP(D3DPT_LINESTRIP, vertexnum, verts, sizeof(VertexList));
+
+	device->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, oldaaenabled);
 
 	delete[] verts;
 }
