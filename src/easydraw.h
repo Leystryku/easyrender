@@ -285,7 +285,8 @@ public:
 	void OutlinedRectangle(int32_t x, int32_t y, int32_t width, int32_t height, int32_t bordersize = 1);
 	void TexturedRectangle(int32_t x, int32_t y, int32_t width, int32_t height);
 
-	void Circle(int32_t x, int32_t y, int32_t radius, int32_t edgecount, int32_t rotation);
+	void Circle(int32_t x, int32_t y, int32_t radius, int32_t edgecount= 30, int32_t rotation=1);
+	void OutlinedCircle(int32_t x, int32_t y, int32_t radius, int32_t edgecount = 30, int32_t rotation = 1);
 
 	void Text(const char *text, int32_t x, int32_t y, int32_t format=0, easydraw_fontrect* rect=0);
 
