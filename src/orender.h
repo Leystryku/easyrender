@@ -53,6 +53,16 @@ public:
 		return renderthread;
 	}
 
+	void* GetWindow()
+	{
+		return window;
+	}
+
+	void* GetTargetWindow()
+	{
+		return targetwindow;
+	}
+
 	uint16_t GetWidth()
 	{
 		return width;
