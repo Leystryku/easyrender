@@ -297,8 +297,8 @@ public:
 	void SetFont(Easyfont* font);
 	void SetMaterial(Easymaterial* mat);
 	
-	int32_t GetRawTextSize(const char*text, int32_t&w, int32_t& h);
-	int32_t GetTextSize(const char*text, int32_t&w, int32_t& h);
+	int32_t GetRawTextSize(const char*text, int32_t&w, int32_t& h, int32_t extraflags=0);
+	int32_t GetTextSize(const char*text, int32_t&w, int32_t& h, int32_t extraflags = 0);
 
 	Easymaterial* GetMaterial(const char *file);
 	Easyfont* GetFont(const char*ourname, const char *fontname, int32_t fontsize, int32_t fontweight);
