@@ -475,7 +475,7 @@ void Easydraw::SetFont(Easyfont *font)
 	curfont = font;
 }
 
-int32_t Easydraw::GetRawTextSize(const char*txt, int32_t&w, int32_t& h)
+int32_t Easydraw::GetRawTextSize(const char*txt, int32_t&w, int32_t& h, int32_t extraflags)
 {
 	if (!curfont.IsValid())
 	{
@@ -489,7 +489,7 @@ int32_t Easydraw::GetRawTextSize(const char*txt, int32_t&w, int32_t& h)
 	ID3DXFont *font = (ID3DXFont*)curfont.GetFont();
 	RECT rec = { 0,0,0,0 };
 
-	font->DrawText(NULL, txt, -1, &rec, DT_CALCRECT, D3DCOLOR_RGBA(0, 0, 0, 0));
+	font->DrawText(NULL, txt, -1, &rec, DT_CALCRECT | extraflags, D3DCOLOR_RGBA(0, 0, 0, 0));
 
 	w = rec.right - rec.left;
 	h = rec.bottom - rec.top;
@@ -497,9 +497,9 @@ int32_t Easydraw::GetRawTextSize(const char*txt, int32_t&w, int32_t& h)
 	return 1;
 }
 
-int32_t Easydraw::GetTextSize(const char*txt, int32_t&w, int32_t& h)
+int32_t Easydraw::GetTextSize(const char*txt, int32_t&w, int32_t& h, int32_t extraflags)
 {
-	GetRawTextSize(txt, w, h);
+	GetRawTextSize(txt, w, h, extraflags);
 
 	//w * logpixelsx / 72 = ms size
 	//ms size * 72 / logpixelsx = w
@@ -513,6 +513,7 @@ int32_t Easydraw::GetTextSize(const char*txt, int32_t&w, int32_t& h)
 
 	return 1;
 }
+
 Easymaterial* Easydraw::GetMaterial(const char *filename)
 {
 	for (uint16_t i = 0; i < matbuffer_loaded;i++) // caching TM
