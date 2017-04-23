@@ -238,7 +238,17 @@ void Easydraw::SetClipped(int32_t top, int32_t bottom, int32_t left, int32_t rig
 	clipr.left = left;
 	clipr.right = right;
 
-	device->SetScissorRect(&clipr);
+	if (top || bottom || left || right)
+	{
+		device->SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE);
+
+		device->SetScissorRect(&clipr);
+	}
+	else {
+		device->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
+
+		device->SetScissorRect(&clipr);
+	}
 }
 
 void Easydraw::Pixel(int32_t x, int32_t y)
