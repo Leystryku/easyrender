@@ -278,6 +278,7 @@ public:
 
 	void Test();
 
+	void SetClipped(int32_t top, int32_t bottom, int32_t left, int32_t right);
 	void Pixel(int32_t x, int32_t y);
 	void Line(int32_t startx, int32_t starty, int32_t endx, int32_t endy);
 
