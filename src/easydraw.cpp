@@ -222,9 +222,23 @@ void Easydraw::Test()
 
 	Text("Bigfazssbatt", 560, 15, DT_NOCLIP);
 
-	Circle(700, 73, 30, 15);
+	Circle(700, 73, 30, 16);
 
 
+}
+
+void Easydraw::SetClipped(int32_t top, int32_t bottom, int32_t left, int32_t right)
+{
+
+	LPDIRECT3DDEVICE9 device = (LPDIRECT3DDEVICE9)d3ddevice;
+
+	RECT clipr = { 0 };
+	clipr.top = top;
+	clipr.bottom = bottom;
+	clipr.left = left;
+	clipr.right = right;
+
+	device->SetScissorRect(&clipr);
 }
 
 void Easydraw::Pixel(int32_t x, int32_t y)
